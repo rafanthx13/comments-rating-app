@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html ng-app="textMinig">
+
+<head>
+    <meta charset="utf-8">
+    <title>Text Mining</title>
+    
+    <link rel="stylesheet" type="text/css" href="lib/node_modules/angular-material/angular-material.min.css">
+    <script src="lib/node_modules/angular/angular.min.js"></script>
+    <script src="lib/node_modules/angular-material/angular-material.js"></script>
+    <script src="lib/node_modules/angular-animate/angular-animate.min.js"></script>
+    <script src="lib/node_modules/angular-aria/angular-aria.min.js"></script>
+    <script src="lib/node_modules/angular-messages/angular-messages.min.js"></script>
+	<script src="https://kit.fontawesome.com/f5913b1737.js" crossorigin="anonymous"></script>
+    
+    <style type="text/css">
+
+	    div {
+	        border: 2px white solid;
+	    }
+
+	    .md-errors-spacer {
+	        display: none;
+	    }
+
+		.mycontainer {
+			justify-content: center;
+         	align-items: center;
+         	display: block;
+		}
+	    
+
+	</style>
+    
+    <script>
+        angular.module('textMinig', ['ngMaterial', 'ngMessages']) // ng-app
+
+	    // Alterar Tema do angular Material
+	    .config(function($mdThemingProvider) {
+	    	$mdThemingProvider.theme('default')
+	    	.primaryPalette('blue-grey'); // Muda a cor
+    	});
+
+	    // Controller
+	    angular.module('textMinig').controller('textMinigController', function($scope, $http, $log) {
+	    	
+	    	$scope.request = {}
+	    	$scope.request.comentario = '';
+	    	$scope.loader = false;
+	    	$scope.avaliation = null;
+	    	$scope.error = false;
+	    	$scope.error_message = '';
+	    	$scope.img_src = 'img/';
+
+	    	$scope.action_text_minig = function (form) {
+	    		if (form.$valid) {
+	    			$scope.loader = true;
+	    			$scope.error = false;
+	    			$http.post("https://rating-comments.herokuapp.com/rating", $scope.request).then(function (response){
+	    				$scope.avaliation = response.data;
+	    				$scope.avaliation = handler_output($scope.avaliation);
+	    				$scope.loader = false;
+	    			}).catch(function (err){
+	    				if(err.status == '500'){
+	    					err = 'String invalida, digite uma frase melhor';
+	    				}
+	    				$scope.avaliation = null;
+						$scope.error_message = err;
+						$scope.error = true;
+						$scope.loader = false;
+					});
+	    		}
+	    	};
+
+	    	$scope.rest_form = function(formulario){
+	    		if (formulario) {
+		            formulario.$setPristine();
+		            formulario.$setUntouched();
+		        }
+		        $scope.request.comentario = '';
+		        $scope.avaliation = null;
+		        $scope.error = false;
+		        $scope.error_message = '';
+	    	}
+
+	    	function handler_output(avaliation){
+	    		nota = avaliation.Inferencia;
+	    		if(nota < 0.2){
+	    			avaliation.Nota = 1;
+	    		}else if (nota >= 0.2 && nota < 0.4) {
+	    			avaliation.Nota = 2;
+	    		}
+	    		else if (nota >= 0.4 && nota < 0.6) {
+	    			avaliation.Nota = 3;
+	    		}
+	    		else if (nota >= 0.6 && nota < 0.8) {
+	    			avaliation.Nota = 4;
+	    		}
+	    		else{
+	    			avaliation.Nota = 5;
+	    		}
+
+	    		if(avaliation.Resposta == "Comentario positivo detectado"){
+	    			avaliation.Status = true;
+	    			avaliation.Inferencia = Math.round(avaliation.Inferencia*100);
+	    			$scope.img_src = 'img/positive.png';
+	    		}else{
+	    			avaliation.Status = false;
+	    			avaliation.Inferencia = Math.round(100 - (avaliation.Inferencia*100));
+	    			$scope.img_src = 'img/negative.png';
+	    		}
+	    		return avaliation;
+	    	};
+
+	    });
+
+    </script>
+</head>
+
+<body ng-controller="textMinigController" ng-cloak layout="column">
+
+    <md-toolbar>
+        <div class="md-toolbar-tools" style="border: 0px;">
+            <h3>
+        <span>Avaliador de Comentários</span>
+      </h3>
+        </div>
+    </md-toolbar>
+
+    <md-content class="md-padding" style="height: 200px;box-sizing: content-box !important; -webkit-box-flex: unset !important;" > <!-- flex-gt-sm> -->
+
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline">Digite o comentário a ser avaliado</span>
+                <md-icon md-font-icon="icon-home" ng-class="font.theme"></md-icon>
+            </md-card-title-text>
+        </md-card-title>
+
+        <form name="form" ng-submit="action_text_minig(form)" enctype="multipart/form-data" novalidate>
+            
+            <md-input-container class="md-block">
+                <label>Comentário</label>
+                <input md-maxlength="90" required md-no-asterisk name="comentario" ng-model="request.comentario">
+                <div ng-messages="form.comentario.$error" ng-class="{'clear': clear}">
+                    <div ng-message="required">É necessário preencher esse campo para enviar.</div>
+                    <div ng-message="md-maxlength">Tem que ter no máximo 60 caracters</div>
+                </div>
+            </md-input-container>
+
+            <div class="container">
+                <md-button class="md-raised md-primary" type="submit">Enviar</md-button>
+                <md-button ng-click="rest_form(form)">Cancelar</md-button>
+            </div>
+
+            <div class="loader" style="text-align: center" ng-show="loader">
+                <md-progress-circular md-mode="indeterminate" ng-show="loader" style="margin: auto"></md-progress-circular>
+                <p>Carregando...</p>
+            </div>
+
+        </form>
+
+    </md-content>
+
+	<div class="mycontainer">
+		
+		<md-card style="padding: 0 50px 0 20px; align-items: center;" ng-show="avaliation != null">
+
+			<div layout='row'>
+				<div>
+					<md-card-title-text>
+					<h2>{{avaliation.Resposta}} com {{avaliation.Inferencia}}% ({{avaliation.Nota}}) </h2>
+					</md-card-title-text>
+				</div>
+				<div>
+					<md-card-title-media height="30" width="30">
+			            <div class="md-media-lg card-media" height="30" width="30">
+			            	<img ng-src="{{img_src}}" height="30" width="30" align='left' style="height: 50px !important; width: 50px !important;">
+			            </div>
+			        </md-card-title-media>
+				</div>
+			</div>
+
+			
+		</md-card>
+
+	</div>
+
+	<md-card style="padding: 0 50px 0 20px" ng-show="error">
+		<span>Deu erro: {{error_message}}</span>
+	</md-card>	
+
+	 <footer class="text-center" style="text-align: center;">
+		<p id="copyright">Desenvolvido por ⚡️ <a class="a-hoover" href="https://rafanthx13.github.io/">Rafael Morais de Assis</a>   </p>
+	</footer>
+
+</body>
+</html>
