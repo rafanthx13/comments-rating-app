@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<html ng-app="textMinig">
+<html ng-app="textMinig" lang="pt-br">
 
 <head>
     <meta charset="utf-8">
-    <title>Text Mining</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Avaliador de Comentário, NLP">
+    <meta name="keywords" content="HTML, CSS, JavaScript, Python, PyTorch, Angular.js">
+    <meta name="author" content="Rafael Morais de Assis">
     
+    <title>Rating Comments</title>
+    
+    <!-- Para ver mais compontenes do Angular => https://material.angularjs.org/latest/demo/input -->
     <link rel="stylesheet" type="text/css" href="lib/node_modules/angular-material/angular-material.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="lib/node_modules/angular/angular.min.js"></script>
     <script src="lib/node_modules/angular-material/angular-material.js"></script>
     <script src="lib/node_modules/angular-animate/angular-animate.min.js"></script>
     <script src="lib/node_modules/angular-aria/angular-aria.min.js"></script>
     <script src="lib/node_modules/angular-messages/angular-messages.min.js"></script>
-	<script src="https://kit.fontawesome.com/f5913b1737.js" crossorigin="anonymous"></script>
     
     <style type="text/css">
 
@@ -28,9 +34,41 @@
          	align-items: center;
          	display: block;
 		}
-	    
+
+		@media screen and (max-width: 600px) {
+		  .container-fluid {
+		    text-align: center;
+		  }
+		  .responsive-label{
+		  	padding-left: 60px;
+		  }
+		  input:checked + .collapse {
+	       	height: 500px !important;
+	   	  }
+		}
+
+	   label input[type="checkbox"] {
+	       display: none;
+	   }
+
+	   label h4 {
+	   	cursor: pointer;
+	   	text-decoration: underline;
+	   }
+
+	   .collapse {
+	       height: 0px;
+	       overflow: hidden;
+	       transition: height 0.8s;
+	   }
+
+	   input:checked + .collapse {
+	       height: 150px;
+	   }
 
 	</style>
+
+
     
     <script>
         angular.module('textMinig', ['ngMaterial', 'ngMessages']) // ng-app
@@ -117,21 +155,37 @@
     </script>
 </head>
 
-<body ng-controller="textMinigController" ng-cloak layout="column">
+<body ng-controller="textMinigController" ng-cloak layout="column" class="container-fluid">
 
     <md-toolbar>
         <div class="md-toolbar-tools" style="border: 0px;">
             <h3>
-        <span>Avaliador de Comentários</span>
+        <span>Avaliador de Comentários usando Deep Learning RNN-LSTM</span>
       </h3>
         </div>
     </md-toolbar>
 
-    <md-content class="md-padding" style="height: 200px;box-sizing: content-box !important; -webkit-box-flex: unset !important;" > <!-- flex-gt-sm> -->
+	<md-content class="md-padding"> 
+    	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+    	    <label>
+    	        <h4 class="md-headline" style="margin: 0px;">Saiba Mais</h4>
+    	        <input type="checkbox" />
+    	        <div id="col3Content" class="collapse">
+    	        	<p> Digite um comentário curto para ser avaliado. O resultado do comentário válido será positivo ou negativo com uma nota de porcentagem indicando o quão negativo/positivo foi. É também emitido uma nota de 1 à 5 com 1 extremamente negativo e 5 extremamente positivo </p>
+    	        	<p> Aplicação Web desenvolvida em Angular.JS e lib CSS angular Material (do Angular.js). Lado do back-end: Desenvolvido em Python, disponibilizado por Flask. Avaliador de comentários desenvollvido a partir da lib PyTorch para uso de redes neurais e Deep Learning. Foi utilizado a RNN-LSTM para processamento de linguagem natural (NLP) treinada a apartir do banco de dados da <a href="https://www.kaggle.com/olistbr/brazilian-ecommerce/home">kaggle</a> <em>"Brazilian E-Commerce Public Dataset by Olist
+					100,000 Orders with product, customer and reviews info"</em> da empreza brasileira <strong>Olist</strong></p>
+    	        	</div>
+    	    </label>
+    	</div>
+    </md-content>
+
+    <md-content class="md-padding" style="height: 200px;box-sizing: content-box !important; -webkit-box-flex: unset !important;" > 
+
+
 
         <md-card-title>
             <md-card-title-text>
-                <span class="md-headline">Digite o comentário a ser avaliado</span>
+                <span class="md-headline">Digite o comentário curto a ser avaliado</span>
                 <md-icon md-font-icon="icon-home" ng-class="font.theme"></md-icon>
             </md-card-title-text>
         </md-card-title>
@@ -139,7 +193,7 @@
         <form name="form" ng-submit="action_text_minig(form)" enctype="multipart/form-data" novalidate>
             
             <md-input-container class="md-block">
-                <label>Comentário</label>
+                <label class="responsive-label">Comentário</label>
                 <input md-maxlength="90" required md-no-asterisk name="comentario" ng-model="request.comentario">
                 <div ng-messages="form.comentario.$error" ng-class="{'clear': clear}">
                     <div ng-message="required">É necessário preencher esse campo para enviar.</div>
@@ -168,7 +222,7 @@
 			<div layout='row'>
 				<div>
 					<md-card-title-text>
-					<h2>{{avaliation.Resposta}} com {{avaliation.Inferencia}}% ({{avaliation.Nota}}) </h2>
+					<h2>{{avaliation.Resposta}} com {{avaliation.Inferencia}}% de certeza ( Nota {{avaliation.Nota}}/5) </h2>
 					</md-card-title-text>
 				</div>
 				<div>
@@ -190,7 +244,7 @@
 	</md-card>	
 
 	 <footer class="text-center" style="text-align: center;">
-		<p id="copyright">Desenvolvido por ⚡️ <a class="a-hoover" href="https://rafanthx13.github.io/">Rafael Morais de Assis</a>   </p>
+		<p>Desenvolvido por ⚡️ <a class="a-hoover" href="https://rafanthx13.github.io/">Rafael Morais de Assis</a> </p>
 	</footer>
 
 </body>
