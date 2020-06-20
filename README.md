@@ -24,8 +24,4 @@ Página Web para servir de acesso ao servidor Flask que avalie comentário em po
 + **[Angular.JS](https://angularjs.org/)** : AngularJS is a structural framework for dynamic web apps.
 + **[Angular.JS Material (CSS)](https://material.angularjs.org/latest/)** : AngularJS Material is an implementation of Google's Material Design Specification (2014-2017).
 
-+ **[Flask](https://flask.palletsprojects.com/en/1.1.x/)** : Flask is a lightweight WSGI web application framework. It is designed to make getting started quick and easy, with the ability to scale up to complex applications.
-+ **[PyTorch)](https://pytorch.org/)** : PyTorch is an open source deep learning platform created by Facebook’s AI research group.
-
-
 <h2 align="center">Feito por &#128640; <a href="https://rafanthx13.github.io/">Rafael Morais de Assis</a></h2>
