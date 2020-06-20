@@ -1,6 +1,7 @@
 <div align="center">
-<h1>App Avaliador de comentários</h1>
+<h1>App Avaliador de comentários 💬</h1>
 <p align="center">
+  <img src="https://img.shields.io/badge/app-web--site-success" alt="Web Vue">
   <img src="https://img.shields.io/badge/web-angular.js-blue" alt="Web Angular.JS">
   <img src="https://img.shields.io/badge/server-flask-orange" alt="Server Flask">
   <img src="https://img.shields.io/badge/ml--lib-pytorch-orange" alt="ml-lib pytorch">
@@ -11,6 +12,10 @@
 ## Objetivo
 
 Página Web para servir de acesso ao servidor Flask que avalie comentário em positivos e negativos.
+
+**Links**
++ [Página Web](https://rafanthx13.github.io/rating-comments-app/)
++ [Repsotitório do server](https://github.com/rafanthx13/rating-comments)
 
 ## Tecnologias
 
